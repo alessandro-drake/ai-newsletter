@@ -1,0 +1,26 @@
+name: Daily Newsletter
+
+on:
+#   schedule:
+#     - cron: '0 12 * * *'  # every day at 12:00 UTC
+  workflow_dispatch:      # allows manual trigger
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Generate newsletter
+        run: python scripts/run_fetch.py
+      - name: Send newsletter
+        run: python scripts/run_send.py
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
